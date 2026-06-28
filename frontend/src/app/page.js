@@ -1,6 +1,7 @@
 "use client";
 
 // VigorFit Premium Gym Management System - Page Coordinator
+// Build Trigger: Vercel deployment directory updated to frontend
 import { useRef } from "react";
 import useScrollAnimations from "@/hooks/useScrollAnimations";
 
