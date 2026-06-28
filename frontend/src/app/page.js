@@ -1,5 +1,6 @@
 "use client";
 
+// VigorFit Premium Gym Management System - Page Coordinator
 import { useRef } from "react";
 import useScrollAnimations from "@/hooks/useScrollAnimations";
 
