@@ -1,0 +1,28 @@
+# Dependencies
+**/node_modules
+
+# Next.js
+**/.next
+**/out
+
+# Environment files
+**/.env
+**/.env.local
+
+# Build
+**/dist
+**/build
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Cache
+**/.turbo
+coverage/
