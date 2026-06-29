@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@vigorfit.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -75,13 +75,6 @@ export default function AdminLoginPage() {
           <p className="text-gray-400 font-light text-xs uppercase tracking-widest mt-1">
             Owner Management Control
           </p>
-        </div>
-
-        {/* Demo Credentials Alert Box */}
-        <div className="mb-6 p-3 bg-white/5 border border-white/10 rounded-lg text-left">
-          <p className="text-[10px] uppercase font-bold text-primary tracking-widest mb-1">Demo Credentials</p>
-          <p className="text-[11px] text-gray-400 font-mono">Email: admin@vigorfit.com</p>
-          <p className="text-[11px] text-gray-400 font-mono">Password: admin123</p>
         </div>
 
         {/* Form Messages */}

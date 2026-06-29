@@ -22,15 +22,18 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function DashboardPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
-  const [workouts, setWorkouts] = useState([
-    { id: 1, type: "Strength Training", duration: "45 mins", date: "Today, 9:00 AM", calories: 420 },
-    { id: 2, type: "HIIT Cardio", duration: "30 mins", date: "Yesterday, 6:00 PM", calories: 350 },
-    { id: 3, type: "Power Yoga", duration: "60 mins", date: "2 days ago", calories: 280 }
-  ]);
+  const [workouts, setWorkouts] = useState([]);
+  const [bookedClasses, setBookedClasses] = useState([]);
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [newWorkoutType, setNewWorkoutType] = useState("Strength Training");
   const [newWorkoutDuration, setNewWorkoutDuration] = useState("45");
   const [newWorkoutCalories, setNewWorkoutCalories] = useState("400");
+
+  // Profile Form States
+  const [profileName, setProfileName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profileWeight, setProfileWeight] = useState("");
+  const [profileFat, setProfileFat] = useState("");
 
   const handleLogout = () => {
     router.push("/");
@@ -251,32 +254,34 @@ export default function DashboardPage() {
                   <div className="glass border border-white/10 p-6 rounded-xl">
                     <h3 className="text-base font-black uppercase tracking-wider text-white mb-6">Upcoming Booked Classes</h3>
                     <div className="space-y-4">
-                      {[
-                        { title: "Power Yoga Flow", time: "Today, 5:30 PM", trainer: "Sarah Connor", duration: "60 mins" },
-                        { title: "HIIT Circuit Blast", time: "Tomorrow, 8:00 AM", trainer: "Marcus Vance", duration: "45 mins" },
-                        { title: "Elite Strength Training", time: "Friday, 10:00 AM", trainer: "Marcus Vance", duration: "60 mins" },
-                      ].map((cls, idx) => (
-                        <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white/5 border border-white/5 rounded-lg hover:border-white/10 transition-colors gap-4">
-                          <div className="flex items-center gap-4">
-                            <div className="p-2.5 bg-primary/10 text-primary rounded-lg">
-                              <Calendar className="h-5 w-5" />
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-bold uppercase text-white tracking-wide">{cls.title}</h4>
-                              <p className="text-xs text-gray-400 font-light mt-0.5">Trainer: {cls.trainer} • Duration: {cls.duration}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 w-full sm:w-auto">
-                            <div className="flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-widest">
-                              <Clock className="h-3.5 w-3.5" />
-                              {cls.time}
-                            </div>
-                            <button className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors ml-auto sm:ml-0 bg-red-500/10 px-3 py-1.5 rounded">
-                              Cancel
-                            </button>
-                          </div>
+                      {bookedClasses.length === 0 ? (
+                        <div className="text-center py-6 text-xs text-gray-500 uppercase tracking-widest font-bold">
+                          No upcoming classes booked. Book one with your trainer!
                         </div>
-                      ))}
+                      ) : (
+                        bookedClasses.map((cls, idx) => (
+                          <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white/5 border border-white/5 rounded-lg hover:border-white/10 transition-colors gap-4">
+                            <div className="flex items-center gap-4">
+                              <div className="p-2.5 bg-primary/10 text-primary rounded-lg">
+                                <Calendar className="h-5 w-5" />
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-bold uppercase text-white tracking-wide">{cls.title}</h4>
+                                <p className="text-xs text-gray-400 font-light mt-0.5">Trainer: {cls.trainer} • Duration: {cls.duration}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 w-full sm:w-auto">
+                              <div className="flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-widest">
+                                <Clock className="h-3.5 w-3.5" />
+                                {cls.time}
+                              </div>
+                              <button className="text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors ml-auto sm:ml-0 bg-red-500/10 px-3 py-1.5 rounded">
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
@@ -376,22 +381,28 @@ export default function DashboardPage() {
 
               {/* Workout List */}
               <div className="grid grid-cols-1 gap-4">
-                {workouts.map((workout) => (
-                  <div key={workout.id} className="glass border border-white/10 p-5 rounded-xl flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-primary/10 text-primary rounded-lg">
-                        <Dumbbell className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold uppercase text-white tracking-wide">{workout.type}</h4>
-                        <p className="text-xs text-gray-400 font-light mt-0.5">Duration: {workout.duration} • Burned: {workout.calories} kcal</p>
-                      </div>
-                    </div>
-                    <div className="text-xs font-semibold text-primary uppercase tracking-widest">
-                      {workout.date}
-                    </div>
+                {workouts.length === 0 ? (
+                  <div className="glass border border-white/10 p-8 rounded-xl text-center text-xs text-gray-500 uppercase tracking-widest font-bold">
+                    No workouts logged yet. Click "Log Workout" to record your first session!
                   </div>
-                ))}
+                ) : (
+                  workouts.map((workout) => (
+                    <div key={workout.id} className="glass border border-white/10 p-5 rounded-xl flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/10 text-primary rounded-lg">
+                          <Dumbbell className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold uppercase text-white tracking-wide">{workout.type}</h4>
+                          <p className="text-xs text-gray-400 font-light mt-0.5">Duration: {workout.duration} • Burned: {workout.calories} kcal</p>
+                        </div>
+                      </div>
+                      <div className="text-xs font-semibold text-primary uppercase tracking-widest">
+                        {workout.date}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </motion.div>
           )}
@@ -458,19 +469,19 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Full Name</label>
-                    <input type="text" defaultValue="Ajay Rathod" className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-primary" />
+                    <input type="text" value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder="Ajay Rathod" className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-primary" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Email Address</label>
-                    <input type="email" defaultValue="rathodajay@example.com" className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-primary" />
+                    <input type="email" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} placeholder="rathodajay@example.com" className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-primary" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Target Weight</label>
-                    <input type="text" defaultValue="75 kg" className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-primary" />
+                    <input type="text" value={profileWeight} onChange={(e) => setProfileWeight(e.target.value)} placeholder="e.g. 75 kg" className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-primary" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Current Body Fat</label>
-                    <input type="text" defaultValue="14%" className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-primary" />
+                    <input type="text" value={profileFat} onChange={(e) => setProfileFat(e.target.value)} placeholder="e.g. 14%" className="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-primary" />
                   </div>
                 </div>
                 <button className="mt-6 px-5 py-3 bg-primary text-black font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-green-600 transition-colors shadow-[0_0_15px_rgba(34,197,94,0.15)]">

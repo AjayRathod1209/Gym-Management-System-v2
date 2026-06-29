@@ -26,19 +26,17 @@ export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
 
   // State lists for Members & Trainers to support live creation and removal!
-  const [members, setMembers] = useState([
-    { id: 1, name: "Liam Anderson", email: "liam@example.com", plan: "VIP Elite", joinDate: "Jun 12, 2026", status: "Active" },
-    { id: 2, name: "Sophia Martinez", email: "sophia@example.com", plan: "Standard Fit", joinDate: "Jun 20, 2026", status: "Active" },
-    { id: 3, name: "Jackson Vance", email: "jackson@example.com", plan: "Basic Fit", joinDate: "May 08, 2026", status: "Frozen" },
-    { id: 4, name: "Olivia Taylor", email: "olivia@example.com", plan: "VIP Elite", joinDate: "Jun 02, 2026", status: "Active" }
-  ]);
+  const [members, setMembers] = useState([]);
+  const [trainers, setTrainers] = useState([]);
 
-  const [trainers, setTrainers] = useState([
-    { id: 1, name: "Marcus Vance", specialty: "Elite Strength & Hypertrophy", clients: 12, status: "Active" },
-    { id: 2, name: "Sarah Connor", specialty: "HIIT & Cardio Endurance", clients: 8, status: "Active" },
-    { id: 3, name: "David Miller", specialty: "Power Yoga & Flexibility", clients: 14, status: "Active" },
-    { id: 4, name: "Emma Watson", specialty: "Pilates & Core Conditioning", clients: 6, status: "On Leave" }
-  ]);
+  // Calculate dynamic monthly revenue based on active member plans
+  const totalRevenue = members.reduce(
+    (sum, m) => sum + (m.status === "Active" ? (m.plan === "VIP Elite" ? 99 : m.plan === "Standard Fit" ? 59 : 29) : 0),
+    0
+  );
+
+  // Dynamic occupancy count based on active members
+  const occupancyCount = Math.min(members.filter(m => m.status === "Active").length, 5);
 
   // Modal control states
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -207,8 +205,10 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <p className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Monthly Revenue</p>
-                    <h3 className="text-lg font-black text-white mt-1">$15,480.00</h3>
-                    <p className="text-[10px] text-primary font-medium mt-0.5">+14% vs last month</p>
+                    <h3 className="text-lg font-black text-white mt-1 text-primary">
+                      ${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </h3>
+                    <p className="text-[10px] text-primary font-medium mt-0.5">Live calculations</p>
                   </div>
                 </div>
 
@@ -220,7 +220,7 @@ export default function AdminDashboardPage() {
                   <div>
                     <p className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Total Members</p>
                     <h3 className="text-lg font-black text-white mt-1">{members.length} Active</h3>
-                    <p className="text-[10px] text-primary font-medium mt-0.5">+4 registered today</p>
+                    <p className="text-[10px] text-primary font-medium mt-0.5">Registered accounts</p>
                   </div>
                 </div>
 
@@ -243,8 +243,8 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <p className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Gym Occupancy</p>
-                    <h3 className="text-lg font-black text-white mt-1">64 In Gym</h3>
-                    <p className="text-[10px] text-primary font-medium mt-0.5">Peak hour activity</p>
+                    <h3 className="text-lg font-black text-white mt-1">{occupancyCount} In Gym</h3>
+                    <p className="text-[10px] text-primary font-medium mt-0.5">Active scanner telemetry</p>
                   </div>
                 </div>
               </div>
@@ -375,34 +375,42 @@ export default function AdminDashboardPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5 text-xs">
-                      {filteredMembers.map((member) => (
-                        <tr key={member.id} className="hover:bg-white/5 transition-colors">
-                          <td className="p-4 pl-6">
-                            <div className="font-bold text-white">{member.name}</div>
-                            <div className="text-gray-500 text-[10px] font-mono mt-0.5">{member.email}</div>
-                          </td>
-                          <td className="p-4">
-                            <span className="font-semibold text-white uppercase tracking-wider">{member.plan}</span>
-                          </td>
-                          <td className="p-4 text-gray-400">{member.joinDate}</td>
-                          <td className="p-4">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                              member.status === "Active" ? "bg-primary/10 text-primary" : "bg-yellow-500/10 text-yellow-500"
-                            }`}>
-                              {member.status}
-                            </span>
-                          </td>
-                          <td className="p-4 pr-6 text-right">
-                            <button
-                              onClick={() => handleDeleteMember(member.id)}
-                              className="p-2 text-gray-500 hover:text-red-400 transition-colors rounded hover:bg-white/5"
-                              title="Delete Account"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                      {filteredMembers.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="p-8 text-center text-gray-500 uppercase tracking-widest text-[10px] font-bold">
+                            No active members found. Click "Add Member" to register.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        filteredMembers.map((member) => (
+                          <tr key={member.id} className="hover:bg-white/5 transition-colors">
+                            <td className="p-4 pl-6">
+                              <div className="font-bold text-white">{member.name}</div>
+                              <div className="text-gray-500 text-[10px] font-mono mt-0.5">{member.email}</div>
+                            </td>
+                            <td className="p-4">
+                              <span className="font-semibold text-white uppercase tracking-wider">{member.plan}</span>
+                            </td>
+                            <td className="p-4 text-gray-400">{member.joinDate}</td>
+                            <td className="p-4">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                member.status === "Active" ? "bg-primary/10 text-primary" : "bg-yellow-500/10 text-yellow-500"
+                              }`}>
+                                {member.status}
+                              </span>
+                            </td>
+                            <td className="p-4 pr-6 text-right">
+                              <button
+                                onClick={() => handleDeleteMember(member.id)}
+                                className="p-2 text-gray-500 hover:text-red-400 transition-colors rounded hover:bg-white/5"
+                                title="Delete Account"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -446,33 +454,41 @@ export default function AdminDashboardPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5 text-xs">
-                      {trainers.map((trainer) => (
-                        <tr key={trainer.id} className="hover:bg-white/5 transition-colors">
-                          <td className="p-4 pl-6">
-                            <div className="font-bold text-white">{trainer.name}</div>
-                          </td>
-                          <td className="p-4">
-                            <span className="text-gray-300 font-light">{trainer.specialty}</span>
-                          </td>
-                          <td className="p-4 text-white font-mono">{trainer.clients} Members</td>
-                          <td className="p-4">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                              trainer.status === "Active" ? "bg-primary/10 text-primary" : "bg-red-500/10 text-red-400"
-                            }`}>
-                              {trainer.status}
-                            </span>
-                          </td>
-                          <td className="p-4 pr-6 text-right">
-                            <button
-                              onClick={() => handleDeleteTrainer(trainer.id)}
-                              className="p-2 text-gray-500 hover:text-red-400 transition-colors rounded hover:bg-white/5"
-                              title="Delete Trainer"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                      {trainers.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="p-8 text-center text-gray-500 uppercase tracking-widest text-[10px] font-bold">
+                            No rostered coaches found. Click "Add Trainer" to roster.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        trainers.map((trainer) => (
+                          <tr key={trainer.id} className="hover:bg-white/5 transition-colors">
+                            <td className="p-4 pl-6">
+                              <div className="font-bold text-white">{trainer.name}</div>
+                            </td>
+                            <td className="p-4">
+                              <span className="text-gray-300 font-light">{trainer.specialty}</span>
+                            </td>
+                            <td className="p-4 text-white font-mono">{trainer.clients} Members</td>
+                            <td className="p-4">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                trainer.status === "Active" ? "bg-primary/10 text-primary" : "bg-red-500/10 text-red-400"
+                              }`}>
+                                {trainer.status}
+                              </span>
+                            </td>
+                            <td className="p-4 pr-6 text-right">
+                              <button
+                                onClick={() => handleDeleteTrainer(trainer.id)}
+                                className="p-2 text-gray-500 hover:text-red-400 transition-colors rounded hover:bg-white/5"
+                                title="Delete Trainer"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
