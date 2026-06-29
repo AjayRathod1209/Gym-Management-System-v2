@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Dumbbell, ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -42,6 +44,8 @@ export default function LoginPage() {
       // Clean form fields
       setEmail("");
       setPassword("");
+      // Redirect to Member Dashboard
+      router.push("/dashboard");
     }, 1500);
   };
 

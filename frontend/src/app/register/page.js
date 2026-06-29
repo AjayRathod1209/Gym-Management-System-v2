@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Dumbbell, ArrowLeft, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,6 +65,10 @@ export default function RegisterPage() {
       setPassword("");
       setConfirmPassword("");
       setAgreeToTerms(false);
+      // Redirect to Login Page
+      setTimeout(() => {
+        router.push("/login");
+      }, 1000);
     }, 1500);
   };
 
