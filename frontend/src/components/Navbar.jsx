@@ -136,7 +136,7 @@ export default function Navbar() {
             {/* Action Buttons */}
             <div className="hidden lg:flex items-center gap-4">
               <a
-                href="#login"
+                href="/login"
                 className="font-sans text-sm font-semibold tracking-wide hover:text-primary transition-colors duration-300 uppercase px-4 py-2"
               >
                 Login
@@ -220,7 +220,7 @@ export default function Navbar() {
               className="flex flex-col items-center gap-4 w-64"
             >
               <a
-                href="#login"
+                href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="font-sans text-lg font-semibold tracking-wide text-white hover:text-primary transition-colors duration-300 uppercase py-2"
               >
