@@ -57,28 +57,27 @@ The frontend application has been updated with luxury-themed static auth and mem
 
 ### 3. Member Dashboard Route (`/dashboard`)
 - **Overview View**: Key fitness metrics cards (Active Plan status, logged workout counts, cumulative active calories burned, and weekly gym attendance percentage rate).
-- **Workout Log View**: Dynamic interface where users can view all past training records, delete scheduled plans, and add new workout sessions (logs details like type, duration, and calories burned).
+- **Workout Log View**: Dynamic interface where users can view all past training records, delete scheduled plans, and add new workout sessions (logs details like type, duration, and calories burned). Defaults to a clean empty state with a placeholder message instructing users to log their first workout.
 - **Membership Plan View**: Displays subscription data (e.g. VIP Elite Tier, payment details, next billing invoice date) with action buttons to upgrade or modify plan configurations.
-- **Profile View**: Account form containing personal details (name, target weight index, body fat percentages).
+- **Profile View**: Account form containing personal details (name, target weight index, body fat percentages). The fields are controlled React inputs initialized as clean, blank placeholders.
 - **Framer Motion Transitions**: Supports tab swaps with smooth exit/entry transitions.
 - **Interactive SVG Performance Chart**: Automatically calculates and charts cumulative calories burned for the week.
 
 ### 4. Admin Login Route (`/admin/login`)
 - **Visual Design**: Accentuated with deep crimson borders and red neon glow filters to demarcate Owner/Admin zones.
 - **Features**:
-  - Pre-seeded test credentials box (`admin@vigorfit.com` / `admin123`) for easy evaluation.
   - Staggered entrance animations.
-  - Triggers a secure redirect to the `/admin/dashboard` panel on validation success.
+  - Triggers a secure redirect to the `/admin/dashboard` panel on validation success. Input fields are initialized as empty strings.
 
 ### 5. Admin Dashboard Route (`/admin/dashboard`)
-- **Overview View**: Tallies core metrics (cumulative gym revenue, total active client membership logs, trainer headcount, and live occupancy rates).
+- **Overview View**: Tallies core metrics (cumulative gym revenue, total active client membership logs, trainer headcount, and live occupancy rates). These calculate dynamically based on active listings, defaulting to 0.
 - **SVG Revenue Chart**: Renders a custom trendline tracking monthly gym business growth.
 - **Members Tab (Account Logs)**: 
   - Direct grid table searching and sorting active/inactive member accounts.
-  - Full CRUD capabilities: Add new members (using name, email, and subscription tier inputs) and remove profile listings.
+  - Full CRUD capabilities: Add new members (using name, email, and subscription tier inputs) and remove profile listings. Table defaults to a clean placeholder table row when no members are present.
 - **Trainers Tab (Roster Management)**:
   - Tracks rostered coaches, Specialties, and active client load counts.
-  - CRUD operations: Add new trainers (using full name and specialty dropdowns) and delete profiles.
+  - CRUD operations: Add new trainers (using full name and specialty dropdowns) and delete profiles. Table defaults to a clean placeholder table row when no trainers are present.
 - **Diagnostics Panel**: Real-time console diagnostics checks (Server Status, connected ports, DB status, and SMTP configurations).
 
 ---

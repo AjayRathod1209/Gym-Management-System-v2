@@ -46,13 +46,18 @@ export default function AdminDashboardPage() {
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [newMemberPlan, setNewMemberPlan] = useState("VIP Elite");
+  const [newMemberStatus, setNewMemberStatus] = useState("Active");
 
   // New trainer form states
   const [newTrainerName, setNewTrainerName] = useState("");
   const [newTrainerSpecialty, setNewTrainerSpecialty] = useState("Elite Strength & Hypertrophy");
+  const [newTrainerStatus, setNewTrainerStatus] = useState("Active");
 
   // Filter/Search states
   const [memberSearch, setMemberSearch] = useState("");
+
+  // Contact Inquiries State
+  const [contacts, setContacts] = useState([]);
 
   const handleLogout = () => {
     router.push("/");
@@ -68,13 +73,14 @@ export default function AdminDashboardPage() {
       email: newMemberEmail,
       plan: newMemberPlan,
       joinDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-      status: "Active"
+      status: newMemberStatus
     };
 
     setMembers([newM, ...members]);
     setIsMemberModalOpen(false);
     setNewMemberName("");
     setNewMemberEmail("");
+    setNewMemberStatus("Active");
   };
 
   const handleAddTrainer = (e) => {
@@ -86,12 +92,13 @@ export default function AdminDashboardPage() {
       name: newTrainerName,
       specialty: newTrainerSpecialty,
       clients: 0,
-      status: "Active"
+      status: newTrainerStatus
     };
 
     setTrainers([newT, ...trainers]);
     setIsTrainerModalOpen(false);
     setNewTrainerName("");
+    setNewTrainerStatus("Active");
   };
 
   const handleDeleteMember = (id) => {
@@ -100,6 +107,47 @@ export default function AdminDashboardPage() {
 
   const handleDeleteTrainer = (id) => {
     setTrainers(trainers.filter(t => t.id !== id));
+  };
+
+  const toggleMemberStatus = (id) => {
+    setMembers(members.map(m => {
+      if (m.id === id) {
+        return { ...m, status: m.status === "Active" ? "Frozen" : "Active" };
+      }
+      return m;
+    }));
+  };
+
+  const toggleTrainerStatus = (id) => {
+    setTrainers(trainers.map(t => {
+      if (t.id === id) {
+        return { ...t, status: t.status === "Active" ? "On Leave" : "Active" };
+      }
+      return t;
+    }));
+  };
+
+  const toggleContactStatus = (id) => {
+    setContacts(contacts.map(c => {
+      if (c.id === id) {
+        return { ...c, status: c.status === "New" ? "Read" : "New" };
+      }
+      return c;
+    }));
+  };
+
+  const handleDeleteContact = (id) => {
+    setContacts(contacts.filter(c => c.id !== id));
+  };
+
+  const handleSimulateMessage = () => {
+    const mockMessages = [
+      { id: Date.now(), name: "John Wick", email: "john@continental.com", subject: "Private Combat Coaching", message: "Do you have tactical training coaches on-site? I need to prep for a high-intensity session next month.", status: "New" },
+      { id: Date.now() + 1, name: "Bruce Wayne", email: "bruce@waynecorp.com", subject: "Gym Buyout Offer", message: "I'd like to book the entire facility for private training sessions every Friday midnight. Name your price.", status: "New" },
+      { id: Date.now() + 2, name: "Lara Croft", email: "lara@croftmanor.co.uk", subject: "Cardio Rig Obstacles", message: "Excellent cardio equipment. Do you offer advanced climbing walls or high-altitude simulation chambers?", status: "New" }
+    ];
+    const randomMsg = mockMessages[Math.floor(Math.random() * mockMessages.length)];
+    setContacts([randomMsg, ...contacts]);
   };
 
   const filteredMembers = members.filter(m => 
@@ -151,6 +199,15 @@ export default function AdminDashboardPage() {
             >
               <UserCheck className="h-4 w-4" />
               Trainers
+            </button>
+            <button
+              onClick={() => setActiveTab("contacts")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold uppercase tracking-wider transition-colors ${
+                activeTab === "contacts" ? "bg-red-500 text-white" : "text-gray-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <Mail className="h-4 w-4" />
+              Inquiries
             </button>
           </nav>
         </div>
@@ -393,9 +450,13 @@ export default function AdminDashboardPage() {
                             </td>
                             <td className="p-4 text-gray-400">{member.joinDate}</td>
                             <td className="p-4">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                                member.status === "Active" ? "bg-primary/10 text-primary" : "bg-yellow-500/10 text-yellow-500"
-                              }`}>
+                              <span
+                                onClick={() => toggleMemberStatus(member.id)}
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors ${
+                                  member.status === "Active" ? "bg-primary/10 text-primary hover:bg-primary/20" : "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"
+                                }`}
+                                title="Click to Toggle Status (Active / Frozen)"
+                              >
                                 {member.status}
                               </span>
                             </td>
@@ -471,9 +532,13 @@ export default function AdminDashboardPage() {
                             </td>
                             <td className="p-4 text-white font-mono">{trainer.clients} Members</td>
                             <td className="p-4">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                                trainer.status === "Active" ? "bg-primary/10 text-primary" : "bg-red-500/10 text-red-400"
-                              }`}>
+                              <span
+                                onClick={() => toggleTrainerStatus(trainer.id)}
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors ${
+                                  trainer.status === "Active" ? "bg-primary/10 text-primary hover:bg-primary/20" : "bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                                }`}
+                                title="Click to Toggle Status (Active / On Leave)"
+                              >
                                 {trainer.status}
                               </span>
                             </td>
@@ -482,6 +547,88 @@ export default function AdminDashboardPage() {
                                 onClick={() => handleDeleteTrainer(trainer.id)}
                                 className="p-2 text-gray-500 hover:text-red-400 transition-colors rounded hover:bg-white/5"
                                 title="Delete Trainer"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "contacts" && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-lg font-black uppercase tracking-wider text-white">Contact Inquiries</h2>
+                  <p className="text-xs text-gray-400 font-light mt-1">Manage user contact submissions and message logs</p>
+                </div>
+                <button
+                  onClick={handleSimulateMessage}
+                  className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold text-xs uppercase tracking-widest px-4 py-2.5 rounded-lg transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                >
+                  <Plus className="h-4 w-4" />
+                  Simulate Inquiry
+                </button>
+              </div>
+
+              {/* Contacts Table */}
+              <div className="glass border border-white/10 rounded-xl overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-white/10 bg-white/5 text-[10px] uppercase font-bold tracking-widest text-gray-400">
+                        <th className="p-4 pl-6">Sender Details</th>
+                        <th className="p-4">Subject</th>
+                        <th className="p-4">Message</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4 pr-6 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-xs">
+                      {contacts.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="p-8 text-center text-gray-500 uppercase tracking-widest text-[10px] font-bold">
+                            No contact inquiries received. Use "Simulate Inquiry" to test!
+                          </td>
+                        </tr>
+                      ) : (
+                        contacts.map((contact) => (
+                          <tr key={contact.id} className="hover:bg-white/5 transition-colors">
+                            <td className="p-4 pl-6">
+                              <div className="font-bold text-white">{contact.name}</div>
+                              <div className="text-gray-500 text-[10px] font-mono mt-0.5">{contact.email}</div>
+                            </td>
+                            <td className="p-4 font-semibold text-white">{contact.subject}</td>
+                            <td className="p-4 text-gray-400 max-w-xs truncate" title={contact.message}>{contact.message}</td>
+                            <td className="p-4">
+                              <span
+                                onClick={() => toggleContactStatus(contact.id)}
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors ${
+                                  contact.status === "New" ? "bg-red-500/10 text-red-400 hover:bg-red-500/20" : "bg-primary/10 text-primary hover:bg-primary/20"
+                                }`}
+                                title="Click to toggle status"
+                              >
+                                {contact.status}
+                              </span>
+                            </td>
+                            <td className="p-4 pr-6 text-right">
+                              <button
+                                onClick={() => handleDeleteContact(contact.id)}
+                                className="p-2 text-gray-500 hover:text-red-400 transition-colors rounded hover:bg-white/5"
+                                title="Delete Inquiry"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -567,6 +714,18 @@ export default function AdminDashboardPage() {
                   </select>
                 </div>
 
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Account Status</label>
+                  <select
+                    value={newMemberStatus}
+                    onChange={(e) => setNewMemberStatus(e.target.value)}
+                    className="w-full bg-black/60 border border-white/10 rounded-lg py-2.5 px-3 text-xs text-white focus:outline-none focus:border-red-500/50"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Frozen">Frozen</option>
+                  </select>
+                </div>
+
                 <button
                   type="submit"
                   className="w-full py-3 mt-4 bg-red-500 text-white font-bold uppercase tracking-wider text-xs rounded-lg hover:bg-red-600 transition-colors duration-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
@@ -628,6 +787,18 @@ export default function AdminDashboardPage() {
                     <option value="HIIT & Cardio Endurance">HIIT & Cardio Endurance</option>
                     <option value="Power Yoga & Flexibility">Power Yoga & Flexibility</option>
                     <option value="Pilates & Core Conditioning">Pilates & Core Conditioning</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-gray-400">Roster Status</label>
+                  <select
+                    value={newTrainerStatus}
+                    onChange={(e) => setNewTrainerStatus(e.target.value)}
+                    className="w-full bg-black/60 border border-white/10 rounded-lg py-2.5 px-3 text-xs text-white focus:outline-none focus:border-red-500/50"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="On Leave">On Leave</option>
                   </select>
                 </div>
 
